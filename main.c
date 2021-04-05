@@ -27,6 +27,7 @@ char * read_string(); /* Lê uma string do teclado. */
  * Estrutura de uma pilha.
  */
 struct Stack {
+    int begin;
     int top;
     int limit;
     char tokens[MAX_SIZE][MAX_SIZE];
@@ -84,7 +85,38 @@ bool analisadorLexico(struct Stack * stack, char * expression) {
 
 
         if(strstr("0123456789", token)) {
-            printf("%s\n", token);
+
+            char auxInteiro[(int)((strlen(token))/sizeof(char))];
+
+            memset(auxInteiro, 0, strlen(auxInteiro));
+
+            strcat(auxInteiro, token);
+
+            if (getToken(aux,  token) == 1) {
+                printf("%s => numero inteiro\n", auxInteiro);
+                return expressaoValida;
+            }
+
+            while(strstr("0123456789", token)) {
+                push(stack, token);
+
+                if (getToken(aux,  token) == 1) {
+                    printf("%s => numero inteiro\n", auxInteiro);
+                    printStack(stack);
+                    return expressaoValida;
+                }
+            }
+
+            if(strstr(".", token)) {
+                printf("%s\n", auxInteiro);
+            } else {
+                printf("%s => numero inteiro\n", auxInteiro);
+            }
+
+            printStack(stack);
+            putToken(aux, token);
+            memset(token, 0, strlen(token));
+            strcat(token, auxInteiro);
 
         } else if(strstr(token, "enter")) {
             printf("%s\n", token);
@@ -94,22 +126,30 @@ bool analisadorLexico(struct Stack * stack, char * expression) {
 
             bool valido = false;
 
+            if (getToken(aux,  token) == 1) {
+                printf("- => erro\n");
+                return false;
+            }
+
             while(strstr("0123456789", token)) {
                 push(stack, token);
                 valido = true;
 
                 if (getToken(aux,  token) == 1) {
-                    printf("- => sinal\n");
+                    printf("- => sinal negativo\n");
                     printStack(stack);
                     return expressaoValida;
                 }
             }
 
             if(valido) {
-                printf("- => sinal\n");
+                printf("- => sinal negativo\n");
                 printStack(stack);
 
                 putToken(aux, token);
+
+                memset(token, 0, strlen(token));
+                strcat(token, "-");
             } else {
                 expressaoValida = false;
 
@@ -363,6 +403,7 @@ char * read_string() {
 // Cria uma pilha
 struct Stack * createStack() {
     struct Stack * stack = (struct Stack *)malloc(sizeof(struct Stack));
+    stack->begin = 0;
     stack->top = -1;
     stack->limit = MAX_SIZE;
 
@@ -371,7 +412,7 @@ struct Stack * createStack() {
 
 // Verifica se a pilha está vazia
 int isEmpty(struct Stack * stack) {
-    return stack->top == -1;
+    return stack->top == -1 || stack->top < stack->begin;
 }
 
 // Verifica se a pilha está cheia
@@ -396,8 +437,17 @@ char * pop(struct Stack * stack) {
     return stack->tokens[stack->top--];
 }
 
+// Remove um elemento da pilha
+char * popLast(struct Stack * stack) {
+    if(isEmpty(stack)) {
+        return "";
+    }
+
+    return stack->tokens[stack->begin++];
+}
+
 void printStack(struct Stack * stack) {
     while(!isEmpty(stack)) {
-        printf("desimpilha: %s\n", pop(stack));
+        printf("%s\n", popLast(stack));
     }
 }
