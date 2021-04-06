@@ -66,6 +66,7 @@ int main()
     char * expression;
     printf("Exemplo de expressão: <4><.><2><*><7><+><log><8>\n");
     printf("Insira sua expressão: ");
+
     expression = readString();
     printf("\n");
 
@@ -137,14 +138,14 @@ int getToken(char expression[], char token[]) {
     if (startAt > endAt) return 1;
 
     memset(token, 0, strlen(token));     // Limpa o conteúdo do token
-    strncpy(token, expression, ++endAt); // Copia o token, sem incluir os '<' e '>'
-    token[endAt] = '\0';
+    strncpy(token, expression, ++endAt); // Copia o token da expressão para a variável
+    token[endAt] = '\0';                 // Força o fim da string
 
     // Verifica se sobraram caractéres na expressão
     if ((int)(strlen(expression) / sizeof(char) - endAt) == 0) {
         strcpy(expression, "");
     } else {
-        // Remove o token da string
+        // Remove o token da string(expressão)
         char aux[(int)(strlen(expression)/sizeof(char)) - endAt];
         strncpy(aux, expression + endAt, (int)(strlen(expression)/sizeof(char)));
         strcpy(expression, aux);
