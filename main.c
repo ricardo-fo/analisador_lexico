@@ -64,25 +64,43 @@ bool isCommand(const char []);
 int main()
 {
     char * expression;
+    printf("Exemplo de expressão: <4><.><2><*><7><+><log><8>\n");
+    printf("Insira sua expressão: ");
     expression = readString();
     printf("\n");
 
     struct Queue * tokens = createQueue();
     if(!checkTokens(tokens, expression)) return 1;
 
-    // bool valido = analisadorLexico(stack, expression);
-
-    // if(!valido) {
-    //     printf("\nEntrada invalida!\n");
-    //     free(expression);
-
-    //     return 1;
-    // }
-
-    printf("\nEntrada valida!\n");
+    printf("Entrada valida!\n");
     free(expression);
 
     return 0;
+}
+
+/*
+ * Function: read_string
+ * ---------------------
+ * Lê uma sequência de caractéres do teclado e cria uma string.
+ *
+ * returns: um ponteiro para a string gerada.
+ */
+char * readString() {
+    char * str = NULL, ch;
+    size_t size = 0;
+    int i = 0;
+
+    // Lê os caractéres enquanto não encontrar um ENTER
+    while((ch = getchar()) != '\n') {
+        if(isspace(ch)) continue;
+        str = realloc(str, size);
+        size += sizeof(char);
+        str[i++] = tolower(ch);
+    }
+
+    str[i] = '\0';
+
+    return str;
 }
 
 // Varre a string, quebrando-a em tokens e inserindo-os numa fila
@@ -107,6 +125,34 @@ bool checkTokens(struct Queue * tokens, char * expression) {
     return true;
 }
 
+// Busca pelo primeiro token da string
+int getToken(char expression[], char token[]) {
+    char * startAtPtr = strstr(expression, "<"); // Ponteiro para o primeiro '<'
+    char * endAtPtr = strstr(expression, ">");   // Ponteiro para o primeiro '>'
+    int startAt = (startAtPtr == NULL ? -1 : startAtPtr - expression); // Índice para o primeiro '<'
+    int endAt = (endAtPtr == NULL ? -1 : endAtPtr - expression);       // Índice para o primeiro '>'
+
+    if (startAt != 0) return 1;
+    if (endAt == -1 || startAt == -1) return 1;
+    if (startAt > endAt) return 1;
+
+    memset(token, 0, strlen(token));     // Limpa o conteúdo do token
+    strncpy(token, expression, ++endAt); // Copia o token, sem incluir os '<' e '>'
+    token[endAt] = '\0';
+
+    // Verifica se sobraram caractéres na expressão
+    if ((int)(strlen(expression) / sizeof(char) - endAt) == 0) {
+        strcpy(expression, "");
+    } else {
+        // Remove o token da string
+        char aux[(int)(strlen(expression)/sizeof(char)) - endAt];
+        strncpy(aux, expression + endAt, (int)(strlen(expression)/sizeof(char)));
+        strcpy(expression, aux);
+    }
+
+    return 0;
+}
+
 // Verifica se o token é válido
 bool isValidToken(const char token[]) {
     if(isNumber(token)) return true;
@@ -121,18 +167,18 @@ bool isNumber(const char token[]) {
     if( ((int)(strlen(token) / sizeof(char))) > 3) return false;
 
     char digit = (char)token[1];
-    return strchr("0123456789E.", digit) == NULL ? false : true;
+    return !(strchr("0123456789E.", digit) == NULL);
 }
 
 // Verifica se o token é um operador
 bool isOperator(const char token[]) {
     if( ((int)(strlen(token) / sizeof(char))) > 5) return false;
 
-    char operators[8][3] = {"+", "-", "*", "/", "^", "log", "sen", "cos"};
+    char operators[8][4] = {"+", "-", "*", "/", "^", "log", "sen", "cos"};
     int i;
 
     for(i = 0; i < 8; i++){
-        if(strlen(token) - 2 > strlen(operators[i])) continue;
+        if(strlen(token) - 2 != strlen(operators[i])) continue;
         if(strncasecmp(token + 1, operators[i], strlen(operators[i])) == 0) return true;
     }
 
@@ -143,10 +189,11 @@ bool isOperator(const char token[]) {
 bool isCommand(const char token[]) {
     if( ((int)(strlen(token) / sizeof(char))) > 7) return false;
 
-    char commands[1][5] = {"enter"};
+    char commands[1][6] = {"enter"};
     int i;
 
     for(i = 0; i < 1; i++){
+        if(strlen(token) - 2 != strlen(commands[i])) continue;
         if(strncasecmp(token + 1, commands[i], strlen(commands[i])) == 0) return true;
     }
 
@@ -172,72 +219,6 @@ void enqueue(struct Queue * queue, char token[]) {
     queue->end++;
     strcpy(queue->tokens[queue->end], token);
     queue->nTokens++;
-}
-
-int getToken(char expression[], char token[]) {
-    char * startAtPtr = strstr(expression, "<"); // Ponteiro para o primeiro '<'
-    char * endAtPtr = strstr(expression, ">");   // Ponteiro para o primeiro '>'
-    int startAt = (startAtPtr == NULL ? -1 : startAtPtr - expression); // Índice para o primeiro '<'
-    int endAt = (endAtPtr == NULL ? -1 : endAtPtr - expression);       // Índice para o primeiro '>'
-
-    if (startAt != 0) return 1;
-    if (endAt == -1 || startAt == -1) return 1;
-    if (startAt > endAt) return 1;
-
-    memset(token, 0, strlen(token));     // Limpa o conteúdo do token
-    strncpy(token, expression, ++endAt); // Copia o token, sem incluir os '<' e '>'
-
-    // Verifica se sobraram caractéres na expressão
-    if ((int)(strlen(expression) / sizeof(char) - endAt) == 0) {
-        strcpy(expression, "");
-    } else {
-        char aux[(int)(strlen(expression)/sizeof(char)) - endAt];
-        strncpy(aux, expression + endAt, (int)(strlen(expression)/sizeof(char)));
-        strcpy(expression, aux);
-    }
-
-    return 0;
-}
-
-// void putToken(char expression[], char token[]) {
-//     char aux[(int)((strlen(expression) + strlen(token) + 2)/sizeof(char))];
-
-//     memset(aux, 0, (int)(strlen(aux) / sizeof(char)));
-
-//     strncat(aux, "<", 1);
-//     strncat(aux, token, (int)(strlen(token) / sizeof(char)));
-//     strncat(aux, ">", 1);
-
-//     strncat(aux, expression, (int)(strlen(expression)/sizeof(char)));
-
-//     memset(expression, 0, strlen(expression));
-
-//     strcpy(expression, aux);
-// }
-
-/*
- * Function: read_string
- * ---------------------
- * Lê uma sequência de caractéres do teclado e cria uma string.
- *
- * returns: um ponteiro para a string gerada.
- */
-char * readString() {
-    char * str = NULL, ch;
-    size_t size = 0;
-    int i = 0;
-
-    // Lê os caractéres enquanto não encontrar um ENTER
-    while((ch = getchar()) != '\n') {
-        // if (ch == ' ') continue;
-        str = realloc(str, size);
-        size += sizeof(char);
-        str[i++] = tolower(ch);
-    }
-
-    str[i] = '\0';
-
-    return str;
 }
 
 // Cria uma pilha
