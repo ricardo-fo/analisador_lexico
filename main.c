@@ -70,6 +70,15 @@ int main()
     struct Queue * tokens = createQueue();
     if(!checkTokens(tokens, expression)) return 1;
 
+    // bool valido = analisadorLexico(stack, expression);
+
+    // if(!valido) {
+    //     printf("\nEntrada invalida!\n");
+    //     free(expression);
+
+    //     return 1;
+    // }
+
     printf("\nEntrada valida!\n");
     free(expression);
 
@@ -190,7 +199,29 @@ int getToken(char expression[], char token[]) {
     return 0;
 }
 
-// Lê uma sequência de caractéres do teclado e cria uma string.
+// void putToken(char expression[], char token[]) {
+//     char aux[(int)((strlen(expression) + strlen(token) + 2)/sizeof(char))];
+
+//     memset(aux, 0, (int)(strlen(aux) / sizeof(char)));
+
+//     strncat(aux, "<", 1);
+//     strncat(aux, token, (int)(strlen(token) / sizeof(char)));
+//     strncat(aux, ">", 1);
+
+//     strncat(aux, expression, (int)(strlen(expression)/sizeof(char)));
+
+//     memset(expression, 0, strlen(expression));
+
+//     strcpy(expression, aux);
+// }
+
+/*
+ * Function: read_string
+ * ---------------------
+ * Lê uma sequência de caractéres do teclado e cria uma string.
+ *
+ * returns: um ponteiro para a string gerada.
+ */
 char * readString() {
     char * str = NULL, ch;
     size_t size = 0;
