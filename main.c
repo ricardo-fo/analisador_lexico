@@ -12,24 +12,24 @@
 #include <stdio.h>  // printf
 
 #include "util.h"             // read_string
-#include "queue.h"            // Queue, create_queue
 #include "token.h"            // check_tokens
 #include "lexical_analyzer.h" // analyse
 
-int main()
-{
+int main() {
     printf("Exemplo de expressão: <4><.><2><*><7><+><log><8>\n");
     printf("Insira sua expressão: ");
 
-    char * expression = read_string();
+    char * expression;
+    expression = read_string();
+
     printf("\n");
 
-    Queue * tokens = create_queue();
-    if(!check_tokens(tokens, expression)) return 1;
-
-    analyse(tokens);
+    if(!check_tokens(expression)) return 1;
+    if(!analyse(expression)) {
+        printf("\nEntrada inválida!\n");
+        return 1;
+    }
 
     free(expression);
-
     return 0;
 }

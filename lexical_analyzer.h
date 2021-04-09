@@ -1,26 +1,29 @@
 #ifndef LEXICAL_ANALYZER_H_INCLUDED
 #define LEXICAL_ANALYZER_H_INCLUDED
 
-#include "queue.h"
+#include <stdbool.h>
+#include "stack.h"
 
-#define MAX_TOKENS 1000
-#define MAX_STR_SIZE 8
+#define SYM_INTEGER 0
+#define SYM_FLOAT 1
+#define SYM_UNARY_OPERATOR 2
+#define SYM_BINARY_OPERATOR 3
+#define SYM_COMMAND 4
 
-// Tipos de símbolos aceitos
-typedef enum {
-    SYM_INTEGER = 0,
-    SYM_FLOAT = 1,
-    SYM_UNARY_OPERATOR = 2,
-    SYM_BINARY_OPERATOR = 3,
-    SYM_COMMAND = 4
-} SymbolType;
+bool analyse(const char *);
 
-// Tipo de símbolo da sequência que compõe a expressão
-typedef struct {
-    SymbolType type;
-    char symbol[MAX_TOKENS][MAX_STR_SIZE];
-} Symbol;
+int check_type(char *, Stack *, char []);
 
-void analyse(Queue *);
+int is_sym_number(char [], Stack *, char []);
+
+int is_sym_operator(char [], Stack *, char []);
+
+int is_sym_command(char [], Stack *, char []);
+
+bool is_number2(const char []);
+
+bool get_symbol(char [], char[]);
+
+void put_token(char [], const char []);
 
 #endif // LEXICAL_ANALYZER_H_INCLUDED

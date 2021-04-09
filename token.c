@@ -2,24 +2,21 @@
 #include <string.h>  // strlen, strcpy, strstr, memset, strncpy, strchr
 #include <strings.h> // strncasecmp
 
-#include "queue.h"   // Queue, enqueue
 #include "token.h"
 
-// Varre a string, quebrando-a em tokens e inserindo-os numa fila
-bool check_tokens(Queue * tokens, char * expression) {
+// Varre a string, quebrando-a em tokens, por exemplo, no formato <number>
+bool check_tokens(const char * expression) {
     char aux[(int)(strlen(expression)/sizeof(char))];
     char token[(int)(strlen(expression)/sizeof(char))];
     strcpy(aux, expression);
 
     do {
-        if (get_token(aux, token) == 1){
+        if (!get_token(aux, token)){
             printf("Insira tokens válidos!\n");
             return false;
         }
 
-        if (is_valid_token(token)) {
-            enqueue(tokens, token);
-        } else {
+        if (!is_valid_token(token)) {
             printf("O token '%s' é inválido!\n", token);
             return false;
         }
@@ -27,32 +24,32 @@ bool check_tokens(Queue * tokens, char * expression) {
     return true;
 }
 
-// Busca pelo primeiro token da string
-int get_token(char expression[], char token[]) {
+// Busca pelo primeiro token da string, caso seja um token válido, retorna true
+bool get_token(char expression[], char token[]) {
     char * startAtPtr = strstr(expression, "<"); // Ponteiro para o primeiro '<'
     char * endAtPtr = strstr(expression, ">");   // Ponteiro para o primeiro '>'
     int startAt = (startAtPtr == NULL ? -1 : startAtPtr - expression); // Índice para o primeiro '<'
     int endAt = (endAtPtr == NULL ? -1 : endAtPtr - expression);       // Índice para o primeiro '>'
 
-    if (startAt != 0) return 1;
-    if (endAt == -1 || startAt == -1) return 1;
-    if (startAt > endAt) return 1;
+    if (startAt != 0) return false;
+    if (endAt == -1 || startAt == -1) return false;
+    if (startAt > endAt) return false;
 
     memset(token, 0, strlen(token));     // Limpa o conteúdo do token
     strncpy(token, expression, ++endAt); // Copia o token da expressão para a variável
     token[endAt] = '\0';                 // Força o fim da string
 
-    // Verifica se sobraram caractéres na expressão
+    // Verifica se sobraram caractéres na string (expressão)
     if ((int)(strlen(expression) / sizeof(char) - endAt) == 0) {
         strcpy(expression, "");
     } else {
-        // Remove o token da string(expressão)
+        // Remove o token da string (expressão)
         char aux[(int)(strlen(expression)/sizeof(char)) - endAt];
         strncpy(aux, expression + endAt, (int)(strlen(expression)/sizeof(char)));
         strcpy(expression, aux);
     }
 
-    return 0;
+    return true;
 }
 
 // Verifica se o token é válido
@@ -69,7 +66,7 @@ bool is_number(const char token[]) {
     if( ((int)(strlen(token) / sizeof(char))) > 3) return false;
 
     char digit = (char)token[1];
-    return !(strchr("0123456789Ee.", digit) == NULL);
+    return strchr("0123456789Ee.", digit) != NULL;
 }
 
 // Verifica se o token é um operador
@@ -87,7 +84,7 @@ bool is_operator(const char token[]) {
     return false;
 }
 
-// Verificas se o token é um comando
+// Verifica se o token é um comando
 bool is_command(const char token[]) {
     if( ((int)(strlen(token) / sizeof(char))) > 7) return false;
 

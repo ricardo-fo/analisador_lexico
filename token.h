@@ -2,16 +2,15 @@
 #define TOKEN_H_INCLUDED
 
 #include <stdbool.h> // bool
-#include "queue.h"   // Queue
 
 /* Busca por um token numa string. */
-int get_token(char [], char[]);
+bool get_token(char [], char[]);
 
 /* ... */
-void put_token(char [], char []);
+// void put_token(char [], char []);
 
 /* Checa se os tokens de uma string são válidos. */
-bool check_tokens(Queue *, char *);
+bool check_tokens(const char *);
 
 /* Checa se um token em específico é válido. */
 bool is_valid_token(const char []);
