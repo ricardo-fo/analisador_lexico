@@ -12,13 +12,13 @@
 
 bool analyse(const char *);
 
-int check_type(char *, Stack *, char []);
+int check_type(char */*, Stack **/, char []);
 
-int is_sym_number(char [], Stack *, char []);
+int is_sym_number(char []/*, Stack **/, char []);
 
-int is_sym_operator(char [], Stack *, char []);
+int is_sym_operator(/*char [], Stack *,*/ char []);
 
-int is_sym_command(char [], Stack *, char []);
+int is_sym_command(/*char [], Stack *,*/ char []);
 
 bool is_number2(const char []);
 

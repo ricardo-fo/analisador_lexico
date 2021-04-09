@@ -1,11 +1,11 @@
 #include "lexical_analyzer.h"
-#include "stack.h"
+// #include "stack.h"
 #include "token.h"
 #include <stdio.h>
 #include <string.h>
 
 bool analyse(const char * expression) {
-    Stack * stack;
+    /*Stack * stack;*/
     int type;
     char aux[ (int)(strlen(expression) / sizeof(char)) ];
     char symbol[ (int)(strlen(expression) / sizeof(char)) ];
@@ -16,7 +16,7 @@ bool analyse(const char * expression) {
         // printf(">>> %s\n", aux);
         if (!get_symbol(aux, symbol)) return true;
 
-        type = check_type(aux, stack, symbol);
+        type = check_type(aux/*, stack*/, symbol);
         printf("%10s ", symbol);
 
         switch (type) {
@@ -46,13 +46,13 @@ bool analyse(const char * expression) {
     return true;
 }
 
-int check_type(char * expression, Stack * stack, char symbol[]) {
+int check_type(char * expression/*, Stack * stack*/, char symbol[]) {
     char copy[ (int)(strlen(expression) / sizeof(char)) ];
     strcpy(copy, expression);
 
-    int type = is_sym_number(copy, stack, symbol);
-    if (type == -1) type = is_sym_operator(copy, stack, symbol);
-    if (type == -1) type = is_sym_command(copy, stack, symbol);
+    int type = is_sym_number(copy/*, stack*/, symbol);
+    if (type == -1) type = is_sym_operator(/*copy, stack,*/ symbol);
+    if (type == -1) type = is_sym_command(/*copy, stack,*/ symbol);
 
     strcpy(expression, copy);
 
@@ -60,7 +60,7 @@ int check_type(char * expression, Stack * stack, char symbol[]) {
 }
 
 // Número: (\+ | \-){0, 1}\d{1, 8}(\.\d{1, 6}){0, 1}(\E(\+ | \-){0, 1}\d{1, 6}){0, 1}
-int is_sym_number(char expression[], Stack * stack, char symbol[]) {
+int is_sym_number(char expression[] /*, Stack * stack*/, char symbol[]) {
     char original[ (int)(strlen(expression) / sizeof(char)) ];
     char number[ (int)(strlen(expression) / sizeof(char)) ];
     bool is_float = false; // Indica se é um ponto flutuante
@@ -163,7 +163,7 @@ int is_sym_number(char expression[], Stack * stack, char symbol[]) {
     return is_float ? SYM_FLOAT : SYM_INTEGER;
 }
 
-int is_sym_operator(char expression[], Stack * stack, char symbol[]) {
+int is_sym_operator(/*char expression[], Stack * stack,*/ char symbol[]) {
     char aux[((int) (strlen(symbol) / sizeof(char))) + 2];
     strcpy(aux, "");
     strcat(aux, "<");
@@ -175,7 +175,7 @@ int is_sym_operator(char expression[], Stack * stack, char symbol[]) {
     return SYM_BINARY_OPERATOR;
 }
 
-int is_sym_command(char expression[], Stack * stack, char symbol[]) {
+int is_sym_command(/*char expression[], Stack * stack,*/ char symbol[]) {
     char aux[((int) (strlen(symbol) / sizeof(char))) + 2];
     strcpy(aux, "");
     strcat(aux, "<");
