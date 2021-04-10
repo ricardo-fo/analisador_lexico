@@ -1,12 +1,12 @@
-> Trabalho de Compiladores I.
-> Grupo: 
-> Alexandre Saura
-> Fábio Thomaz
-> Ricardo Oliveira
-> Rodrigo Suarez
-> 
-> Prof.: José Fontebasso Neto.
-> UNISANTOS - março-abril de 2021.
+> Trabalho de Compiladores I.  
+> Grupo:  
+> Alexandre Saura  
+> Fábio Thomaz  
+> Ricardo Oliveira  
+> Rodrigo Suarez  
+>   
+> Prof.: José Fontebasso Neto.  
+> UNISANTOS - março-abril de 2021.  
 
 # O Projeto   
 Analisador léxico de uma calculadora com notação pós-fixada. A aplicação deverá analisar uma sequência de caractéres vindas do teclado e fazer sua análise léxica.  
