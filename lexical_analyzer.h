@@ -2,7 +2,6 @@
 #define LEXICAL_ANALYZER_H_INCLUDED
 
 #include <stdbool.h>
-#include "stack.h"
 
 #define SYM_INTEGER 0
 #define SYM_FLOAT 1
@@ -12,18 +11,16 @@
 
 bool analyse(const char *);
 
-int check_type(char */*, Stack **/, char []);
+int check_type(char *, char[]);
 
-int is_sym_number(char []/*, Stack **/, char []);
+int is_sym_number(char[], char[]);
 
-int is_sym_operator(/* Stack *, */ char []);
+int is_sym_operator(char[]);
 
-int is_sym_command(/* Stack *, */ char []);
+int is_sym_command(char[]);
 
-bool is_number2(const char []);
+bool is_number2(const char[]);
 
-bool get_symbol(char [], char[]);
-
-void put_token(char [], const char []);
+bool get_symbol(char[], char[]);
 
 #endif // LEXICAL_ANALYZER_H_INCLUDED

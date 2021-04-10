@@ -31,11 +31,8 @@ util.o: util.h
 token.o: token.h
 	$(CC) -c token.c $(CFLAGS)
 
-lexical_analyzer.o: lexical_analyzer.h stack.h token.h
+lexical_analyzer.o: lexical_analyzer.h token.h
 	$(CC) -c lexical_analyzer.c $(CFLAGS)
-
-stack.o: stack.h
-	$(CC) -c stack.c $(CFLAGS)
 
 # Executar
 run:

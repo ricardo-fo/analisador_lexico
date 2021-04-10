@@ -15,17 +15,20 @@
 #include "token.h"            // check_tokens
 #include "lexical_analyzer.h" // analyse
 
-int main() {
+int main()
+{
     printf("Exemplo de expressão: <4><.><2><*><7><+><log><8>\n");
     printf("Insira sua expressão: ");
 
-    char * expression;
+    char *expression;
     expression = read_string();
 
     printf("\n");
 
-    if(!check_tokens(expression)) return 1;
-    if(!analyse(expression)) {
+    if (!check_tokens(expression))
+        return 1;
+    if (!analyse(expression))
+    {
         printf("\nEntrada inválida!\n");
         return 1;
     }
