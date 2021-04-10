@@ -13,7 +13,6 @@ bool analyse(const char * expression) {
     strcpy(symbol, "");
 
     do {
-        // printf(">>> %s\n", aux);
         if (!get_symbol(aux, symbol)) return true;
 
         type = check_type(aux/*, stack*/, symbol);
@@ -39,8 +38,6 @@ bool analyse(const char * expression) {
                 printf("=> erro\n");
                 return false;
         }
-        // printf("aux: %s\n", aux);
-        // printf("l: %d\n", (int)(strlen(aux)/sizeof(char)));
     } while((int)(strlen(aux)/sizeof(char)) > 0);
 
     return true;
@@ -51,8 +48,8 @@ int check_type(char * expression/*, Stack * stack*/, char symbol[]) {
     strcpy(copy, expression);
 
     int type = is_sym_number(copy/*, stack*/, symbol);
-    if (type == -1) type = is_sym_operator(/*copy, stack,*/ symbol);
-    if (type == -1) type = is_sym_command(/*copy, stack,*/ symbol);
+    if (type == -1) type = is_sym_operator(/* stack, */ symbol);
+    if (type == -1) type = is_sym_command(/* stack, */ symbol);
 
     strcpy(expression, copy);
 
@@ -163,7 +160,7 @@ int is_sym_number(char expression[] /*, Stack * stack*/, char symbol[]) {
     return is_float ? SYM_FLOAT : SYM_INTEGER;
 }
 
-int is_sym_operator(/*char expression[], Stack * stack,*/ char symbol[]) {
+int is_sym_operator(/* Stack * stack,*/ char symbol[]) {
     char aux[((int) (strlen(symbol) / sizeof(char))) + 2];
     strcpy(aux, "");
     strcat(aux, "<");
@@ -175,7 +172,7 @@ int is_sym_operator(/*char expression[], Stack * stack,*/ char symbol[]) {
     return SYM_BINARY_OPERATOR;
 }
 
-int is_sym_command(/*char expression[], Stack * stack,*/ char symbol[]) {
+int is_sym_command(/* Stack * stack,*/ char symbol[]) {
     char aux[((int) (strlen(symbol) / sizeof(char))) + 2];
     strcpy(aux, "");
     strcat(aux, "<");
@@ -185,271 +182,6 @@ int is_sym_command(/*char expression[], Stack * stack,*/ char symbol[]) {
     if (!is_command(aux)) return -1;
     return SYM_COMMAND;
 }
-/*
-    bool last_char_and_binary_operator = false;
-    bool last_char_and_number = false;
-    bool second_number = false;
-    bool first_char = true;
-    bool is_valid_expression = true;
-
-        // Caso o symbol for um numero
-        if (is_number(symbol)) {
-            
-            char integer_aux[ (int)((strlen(symbol)) / sizeof(char)) ];
-
-            memset(integer_aux, 0, strlen(integer_aux));
-            strcpy(integer_aux, symbol);
-
-            if (!get_symbol(aux,  symbol)) {
-                printf("%s => numero inteiro\n", integer_aux);
-                return is_valid_expression;
-            } else {
-                printf("O symbol '%s' é inválido!\n", symbol);
-                return false;
-            }
-
-            while(is_number(symbol)) {
-                push(stack, symbol);
-
-                if (get_symbol(aux,  symbol) == 1) {
-                    printf("%s => numero inteiro\n", integer_aux);
-                    printStack(stack);
-                    return is_valid_expression;
-                }
-            }
-
-            // vai verificar se o conjunto de symbols pego é um numero inteiro ou com ponto flutuante
-            if(strstr(".", symbol)) {
-                printf("%s\n", integer_aux);
-            } else {
-                printf("%s => numero inteiro\n", integer_aux);
-            }
-
-            printStack(stack);
-            putsymbol(aux, symbol);
-            memset(symbol, 0, strlen(symbol));
-            strcat(symbol, integer_aux);
-        // vai verificar se é um comando
-        } else if(strstr(symbol, "enter")) {
-            printf("%s => comando\n", symbol);
-            second_number = !second_number;
-
-        // vai verificar se é um numero com sinal
-        } else if(first_char && strstr("-", symbol)) {
-
-            bool valido = false;
-
-            if (pegasymbol(aux,  symbol) == 1) {
-                printf("- => erro\n");
-                return false;
-            }
-
-            while(strstr("0123456789", symbol)) {
-                push(stack, symbol);
-                valido = true;
-
-                if (pegasymbol(aux,  symbol) == 1) {
-                    printf("- => sinal negativo\n");
-                    printStack(stack);
-                    return is_valid_expression;
-                }
-            }
-
-            if(valido) {
-                printf("- => sinal negativo\n");
-                printStack(stack);
-
-                putsymbol(aux, symbol);
-
-                memset(symbol, 0, strlen(symbol));
-                strcat(symbol, "-");
-            } else {
-                is_valid_expression = false;
-
-                printf("- => erro\n");
-                printStack(stack);
-
-                if (pegasymbol(aux, symbol) == 1) return 1;
-
-                while(!strstr("enter", symbol)) {
-                    printf("%s\n", symbol);
-
-                    if (pegasymbol(aux, symbol) == 1) return 1;
-                }
-
-                printf("%s\n", symbol);
-            }
-
-        // vai verificar se é um numero com ponto flutuante
-        } else if(strstr(".", symbol)) {
-
-            if (pegasymbol(aux, symbol) == 1) {
-                printf("%s => erro\n", symbol);
-                return false;
-            }
-
-            if(!last_char_and_number && !first_char) {
-                is_valid_expression = false;
-
-                printf(". => erro\n");
-
-                while(!strstr("enter", symbol)) {
-                    printf("%s\n", symbol);
-
-                    if (pegasymbol(aux, symbol) == 1) return is_valid_expression;
-                }
-
-                printf("%s\n", symbol);
-            } else {
-
-                bool valido = false;
-
-                while(strstr("0123456789", symbol)) {
-                    push(stack, symbol);
-                    valido = true;
-
-                    if (pegasymbol(aux,  symbol) == 1) {
-                        printf(". => ponto fluatuante\n");
-                        printStack(stack);
-                        return is_valid_expression;
-                    }
-                }
-
-                if(valido) {
-                    printf(". => ponto fluatuante\n");
-                    printStack(stack);
-
-                    putsymbol(aux, symbol);
-                } else {
-                    is_valid_expression = false;
-
-                    printf(". => erro\n");
-                    printStack(stack);
-
-                    while(!strstr("enter", symbol)) {
-                        printf("%s\n", symbol);
-
-                        if (pegasymbol(aux, symbol) == 1) return is_valid_expression;
-                    }
-
-                    printf("%s\n", symbol);
-                }
-            }
-        // vai verificar se é uma potencia
-        } else if(strstr(symbol, "^") || strstr(symbol, "E") || strstr(symbol, "e")) {
-
-            if (pegasymbol(aux, symbol) == 1) {
-                printf("%s => erro\n", symbol);
-                return false;
-            }
-
-            char auxPotencia[(int)((strlen(symbol))/sizeof(char))];
-
-            memset(auxPotencia, 0, strlen(auxPotencia));
-
-            strcat(auxPotencia, symbol);
-
-            if(!last_char_and_number && !first_char) {
-                is_valid_expression = false;
-
-                printf(". => erro\n");
-
-                while(!strstr("enter", symbol)) {
-                    printf("%s\n", symbol);
-
-                    if (pegasymbol(aux, symbol) == 1) return is_valid_expression;
-                }
-
-                printf("%s\n", symbol);
-            } else {
-
-                bool valido = false;
-
-                while(strstr("0123456789", symbol)) {
-                    push(stack, symbol);
-
-                    valido = true;
-
-                    if (pegasymbol(aux, symbol) == 1) {
-                        printf("%s => potencia\n", auxPotencia);
-                        printStack(stack);
-                        return is_valid_expression;
-                    }
-                }
-
-                if(valido) {
-                    printf("%s => potencia\n", auxPotencia);
-
-                    printStack(stack);
-
-                    putsymbol(aux, symbol);
-                } else {
-                    printf("%s => erro\n", auxPotencia);
-
-                    printStack(stack);
-
-                    while(!strstr("enter", symbol)) {
-                        printf("%s\n", symbol);
-
-                        if (pegasymbol(aux, symbol) == 1) return is_valid_expression;
-                    }
-
-                    printf("%s\n", symbol);
-                }
-
-            }
-
-        // vai verificar se é um operador binario
-        } else if(strstr("+-*", symbol)) {
-
-            if(second_number && last_char_and_number) {
-                printf("%s => operador binario\n", symbol);
-            } else {
-                is_valid_expression = false;
-
-                printf("%s => erro\n", symbol);
-
-                if (pegasymbol(aux, symbol) == 1) return is_valid_expression;
-
-                while(!strstr("enter", symbol)) {
-                    printf("%s\n", symbol);
-
-                    if (pegasymbol(aux, symbol) == 1) return is_valid_expression;
-                }
-
-                printf("%s\n", symbol);
-            }
-
-        // vai verificar se é um operador unario
-        } else if(strstr(symbol, "log") || strstr(symbol, "cos") || strstr(symbol, "sen")) {
-
-            if(last_char_and_number || last_char_and_binary_operator) {
-                printf("%s => operador unario\n", symbol);
-            } else {
-                printf("%s => erro\n", symbol);
-
-                if (pegasymbol(aux, symbol) == 1) return is_valid_expression;
-
-                while(!strstr("enter", symbol)) {
-                    printf("%s\n", symbol);
-
-                    if (pegasymbol(aux, symbol) == 1) return is_valid_expression;
-                }
-
-                printf("%s\n", symbol);
-            }
-        }
-
-        last_char_and_number = strstr("0123456789.", symbol);
-
-        last_char_and_binary_operator = strstr("+-*", symbol);
-
-        first_char = strstr("enter", symbol);
-    } while((int)(strlen(aux)/sizeof(char)) > 0);
-
-    return is_valid_expression;
-}
-*/
 
 // Busca pelo primeiro token da string
 bool get_symbol(char expression[], char symbol[]) {
